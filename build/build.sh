@@ -23,7 +23,7 @@ systemctl mask rpm-ostree-countme.timer
 # Flatpaky sa nainštalujú pri prvom štarte siete
 systemctl enable smnext-flatpaks.service
 
-chmod +x /usr/bin/smnext-look
+chmod +x /usr/bin/smnext-look /usr/bin/smnext-netlock
 dnf5 clean all
 
 # Branding + verzia (ID zostáva fedora kvôli kompatibilite nástrojov)

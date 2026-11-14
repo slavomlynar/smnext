@@ -27,7 +27,7 @@ Obraz sa zostavuje automaticky na GitHube a do počítača sa dostane ako aktual
 - Obraz **nebol zostavený ani spustený** v prostredí, kde vznikol (nie je tam podman). Prvý build môže vyžadovať drobné opravy. Chyby z GitHub Actions mi pošli.
 - Kamera na Surface Go 2 je na Linuxe slabá, je to obmedzenie hardvéru, nie tohto obrazu.
 - Claude, ChatGPT a Gemini nemajú oficiálne desktopové aplikácie pre Linux, používaj ich cez prehliadač (môžeš ich pripnúť ako web aplikácie).
-- Tor/VPN je zatiaľ **nainštalovaný, nie vynútený** pre všetku prevádzku. Vynútený kill-switch je ďalšia etapa.
+- **VPN kill-switch:** daj WireGuard konfiguráciu od poskytovateľa do `/etc/wireguard/wg0.conf` (Endpoint musí byť IP adresa), potom `sudo smnext-netlock on`. Všetka prevádzka ide len cez VPN, pri páde VPN sa sieť odpojí. Vypnutie: `sudo smnext-netlock off`. Lokálna sieť (LAN) je počas zámku blokovaná. Systémový Tor nie je vynútený, na anonymné prehliadanie používaj Tor Browser.
 
 ---
 SMNext © mlynar.org. Verzia je v súbore `VERSION`, zmeny v `CHANGELOG.md`.

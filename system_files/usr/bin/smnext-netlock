@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+# SMNext VPN kill-switch: všetka odchádzajúca prevádzka ide len cez WireGuard (wg0).
+# Použitie: smnext-netlock on|off|status   (potrebuje /etc/wireguard/wg0.conf s Endpoint = IP:port)
+set -eu
+CONF=/etc/wireguard/wg0.conf
+
+apply() {
+    ep=$(sed -n 's/^[Ee]ndpoint *= *//p' "$CONF" | head -n1 | tr -d ' ')
+    port=${ep##*:}; host=${ep%:*}; host=${host#[}; host=${host%]}
+    # Endpoint musí byť IP (nie meno), inak by DNS unikal mimo VPN
+    [[ $host =~ ^[0-9.]+$ || $host == *:* ]] || { echo "Endpoint v $CONF musí byť IP adresa, nie meno." >&2; exit 1; }
+    fam=ip; [[ $host == *:* ]] && fam=ip6
+    nft delete table inet smnext_lock 2>/dev/null || true
+    nft -f - <<EOF
+table inet smnext_lock {
+  chain output {
+    type filter hook output priority 0; policy drop;
+    oif lo accept
+    oifname "wg0" accept
+    $fam daddr $host udp dport $port accept
+    udp sport 68 udp dport 67 accept
+    udp sport 546 udp dport 547 accept
+    icmpv6 type { nd-router-solicit, nd-neighbor-solicit, nd-neighbor-advert } accept
+  }
+}
+EOF
+}
+
+case "${1:-status}" in
+    apply) apply ;;
+    flush) nft delete table inet smnext_lock 2>/dev/null || true ;;
+    on)  [ -r "$CONF" ] || { echo "Chýba $CONF (WireGuard konfigurácia od tvojho VPN poskytovateľa)." >&2; exit 1; }
+         apply && systemctl enable --now smnext-netlock.service wg-quick@wg0.service
+         echo "Kill-switch ZAPNUTÝ." ;;
+    off) systemctl disable --now smnext-netlock.service wg-quick@wg0.service || true
+         nft delete table inet smnext_lock 2>/dev/null || true
+         echo "Kill-switch VYPNUTÝ." ;;
+    status) nft list table inet smnext_lock >/dev/null 2>&1 && echo "Kill-switch: ZAPNUTÝ" || echo "Kill-switch: vypnutý"
+            wg show 2>/dev/null || true ;;
+    *) echo "Použitie: smnext-netlock on|off|status"; exit 1 ;;
+esac

@@ -1,0 +1,13 @@
+[Unit]
+Description=SMNext VPN kill-switch (nftables)
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/smnext-netlock apply
+ExecStop=/usr/bin/smnext-netlock flush
+
+[Install]
+WantedBy=multi-user.target
