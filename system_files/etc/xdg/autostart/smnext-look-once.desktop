@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=SMNext look (first login)
+Exec=/usr/bin/bash -c 'sleep 8; [ -e "$HOME/.config/smnext-look.done" ] || /usr/bin/smnext-look'
+X-KDE-autostart-phase=2
+NoDisplay=true

@@ -3,11 +3,11 @@ set -euxo pipefail
 
 # Balíky: fulltext (recoll), Tor/VPN nástroje, dotyk (klávesnica, rotácia), Kvantum téma engine
 dnf5 install -y recoll poppler-utils tor torsocks wireguard-tools \
-    maliit-keyboard iio-sensor-proxy kvantum
+    maliit-keyboard iio-sensor-proxy kvantum rsms-inter-fonts
 
 # macOS vzhľad (WhiteSur); nainštaluje sa systémovo do /usr/share
 t=$(mktemp -d)
-for r in WhiteSur-kde WhiteSur-icon-theme; do
+for r in WhiteSur-kde WhiteSur-icon-theme WhiteSur-cursors; do
     curl -fsSL "https://github.com/vinceliuice/$r/archive/refs/heads/master.tar.gz" | tar -xz -C "$t"
     (cd "$t/$r-master" && ./install.sh)
 done

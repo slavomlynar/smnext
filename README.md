@@ -10,7 +10,7 @@ Obraz sa zostavuje automaticky na GitHube a do počítača sa dostane ako aktual
 - **Plynulosť:** zram + ladenie `vm.*` pre malú RAM (Surface Go 2 má 4 alebo 8 GB).
 - **Dotyk:** Maliit klávesnica, automatická rotácia (iio-sensor-proxy).
 - **Vyhľadávanie:** Baloo s indexovaním obsahu súborov + Recoll na hlbšie fulltextové hľadanie.
-- **Vzhľad:** téma WhiteSur (macOS štýl).
+- **Vzhľad:** WhiteSur (macOS štýl), písmo Inter, kurzor WhiteSur, tlačidlá okien vľavo, horný panel s globálnym menu a plávajúci dock. Pri prvom prihlásení sa použije automaticky, ručne cez `smnext-look`.
 
 ## Inštalácia (raz)
 1. Na GitHube vytvor **nový repozitár** (napr. `smnext`), nahraj doň obsah tohto priečinka a v záložke *Actions* povoľ workflow. Po prvom builde (cca 15 min) sa objaví balík v *Packages*, nastav ho ako **Public**.

@@ -1,6 +1,40 @@
 #!/usr/bin/bash
-# Prepne Plasmu na macOS vzhľad (WhiteSur, tmavý). Spusti ako bežný používateľ.
-set -eu
-pkg=$(lookandfeeltool -l | grep -i whitesur | grep -i dark | head -n1 || true)
-[ -n "$pkg" ] || { echo "WhiteSur look-and-feel sa nenašiel:"; lookandfeeltool -l; exit 1; }
-lookandfeeltool -a "$pkg"
+# SMNext: macOS vzhľad (WhiteSur + Inter + horný panel + dock). Spusti ako bežný používateľ, je opakovateľný.
+set -u
+kw() { kwriteconfig6 --file "$1" --group "$2" --key "$3" "$4"; }
+qd() { for q in qdbus6 qdbus-qt6 qdbus; do command -v "$q" >/dev/null && { "$q" "$@"; return; }; done; return 1; }
+
+lnf=com.github.vinceliuice.WhiteSur-dark
+lookandfeeltool -a "$lnf" || { echo "Chýba $lnf. Dostupné:"; lookandfeeltool -l; exit 1; }
+
+# Ikony, kurzor, Kvantum štýl
+kw kdeglobals Icons Theme WhiteSur-dark
+cur=$(ls /usr/share/icons | grep -i '^whitesur.*cursor' | head -n1)
+[ -n "$cur" ] && plasma-apply-cursortheme "$cur"
+kvantummanager --set WhiteSur 2>/dev/null
+kw kdeglobals KDE widgetStyle kvantum
+
+# Písmo Inter a tlačidlá okien vľavo (zavrieť, minimalizovať, maximalizovať) ako na macOS
+for k in font menuFont toolBarFont activeFont; do kw kdeglobals General "$k" "Inter,10,-1,5,50,0,0,0,0,0"; done
+kw kwinrc org.kde.kdecoration2 ButtonsOnLeft XIA
+kw kwinrc org.kde.kdecoration2 ButtonsOnRight ""
+qd org.kde.KWin /KWin reconfigure
+
+# Panely: nové sa vytvoria ako prvé, staré sa zmažú až potom
+read -r -d '' js <<'EOF'
+var old = panels();
+var top = new Panel(); top.location = "top"; top.height = 30;
+top.addWidget("org.kde.plasma.kickoff");
+top.addWidget("org.kde.plasma.appmenu");
+top.addWidget("org.kde.plasma.panelspacer");
+top.addWidget("org.kde.plasma.systemtray");
+top.addWidget("org.kde.plasma.digitalclock");
+var dock = new Panel(); dock.location = "bottom"; dock.height = 64;
+dock.alignment = "center"; dock.lengthMode = "fit"; dock.floating = true; dock.hiding = "dodgewindows";
+dock.addWidget("org.kde.plasma.icontasks");
+for (var i = 0; i < old.length; i++) old[i].remove();
+EOF
+qd org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$js"
+
+mkdir -p "$HOME/.config" && touch "$HOME/.config/smnext-look.done"
+echo "Hotovo. Odhlás sa a prihlás pre úplné použitie vzhľadu."
