@@ -1,0 +1,5 @@
+[Basic Settings]
+Indexing-Enabled=true
+
+[General]
+only basic indexing=false

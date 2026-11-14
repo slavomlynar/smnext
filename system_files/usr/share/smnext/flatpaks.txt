@@ -1,0 +1,5 @@
+org.mozilla.firefox
+org.torproject.torbrowser-launcher
+org.libreoffice.LibreOffice
+org.signal.Signal
+com.github.tchx84.Flatseal

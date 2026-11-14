@@ -1,0 +1,12 @@
+[Unit]
+Description=Install default Flatpaks (once)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/smnext/flatpaks.done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c 'flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo && xargs -a /usr/share/smnext/flatpaks.txt flatpak install --system -y --noninteractive flathub && mkdir -p /var/lib/smnext && touch /var/lib/smnext/flatpaks.done'
+
+[Install]
+WantedBy=multi-user.target

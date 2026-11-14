@@ -1,0 +1,19 @@
+name: build
+on:
+  push: {branches: [main]}
+  schedule: [{cron: '0 4 * * 1'}]   # týždenne, aby si dostával Fedora aktualizácie
+  workflow_dispatch: {}
+permissions: {contents: read, packages: write}
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and push
+        run: |
+          IMG=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/smnext
+          echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+          V=$(cat VERSION)
+          podman build -t "$IMG:latest" -t "$IMG:$V" .
+          podman push "$IMG:latest"
+          podman push "$IMG:$V"

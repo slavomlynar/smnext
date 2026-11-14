@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+# Prepne Plasmu na macOS vzhľad (WhiteSur, tmavý). Spusti ako bežný používateľ.
+set -eu
+pkg=$(lookandfeeltool -l | grep -i whitesur | grep -i dark | head -n1 || true)
+[ -n "$pkg" ] || { echo "WhiteSur look-and-feel sa nenašiel:"; lookandfeeltool -l; exit 1; }
+lookandfeeltool -a "$pkg"
